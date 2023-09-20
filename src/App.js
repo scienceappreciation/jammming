@@ -2,6 +2,20 @@ import React, { useState } from 'react';
 import SearchBar from './components/SearchBar';
 import SearchResults from './components/SearchResults';
 import Playlist from './components/Playlist';
+import TrackData from './classes/TrackData';
+
+/* TODO: Cleanup and Standardize Object Format for Track Data via a Class
+/* TODO: Implement Shallow Comparing Track Data via Class */
+/* TODO: Work author and album into the track information */
+/* TODO: Conduct Proper Mock Tests & Implement Search Function */
+
+const mock_cover = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT39IVFHztC3vYZTT9k04c3x99_fytdXkQJH_ODRHb7eWe7S4f3";
+
+const MOCK_TRACKS = [
+  new TrackData("https://uri_1", "King of Meat", "Following the first ever tie episode, Mark and Bob attempt sharing host responsibilities, while Wade regales with tales of great and not so great eats.", "Markiplier", "Distractible", mock_cover),
+  new TrackData("https://uri_2", "Mark Hates The Moon", "Mark explains his nearly inexplicable hatred toward a redditor who posts high resolution pictures of the moon and wonders if Bob and Wade have any similar situation.", "Markiplier", "Distractible", mock_cover),
+  new TrackData("https://uri_3", "Whose Podcast Is It Anyway?", "Put on your Drew Carey glasses, hawaiian shirts, and bald caps! This episode is an homage to the show where everything is made up and the points don't matter!", "Markiplier", "Distractible", mock_cover)
+];
 
 function App() {
 
@@ -11,11 +25,7 @@ function App() {
 
   function handleSearch(e) {
     e.preventDefault();
-    setSearchResults(() => [{
-      cover: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT39IVFHztC3vYZTT9k04c3x99_fytdXkQJH_ODRHb7eWe7S4f3",
-      title: "King of Meat",
-      description: "Following the first ever tie episode, Mark and Bob attempt sharing host responsibilities, while Wade regales with tales of great and not so great eats."
-    }]);
+    setSearchResults(() => MOCK_TRACKS);
   }
 
   function handleTitleChange(e) {
@@ -24,16 +34,17 @@ function App() {
   }
 
   function handleAdd(data) {
+    // Expects Data to be TrackData
     setTrackList((prev) => {
-      if (prev.some((o => JSON.stringify(o) === JSON.stringify(data)))) return prev; // No duplicate tracks allowed
-
+      if (prev.some((track => TrackData.compare(track, data)))) return prev; // No duplicate tracks allowed
       return [data, ...prev];
     });
   }
 
   function handleRemove(data) {
+    // Expects Data to be TrackData
     setTrackList((prev) => {
-      return prev.filter(o => JSON.stringify(o) !== JSON.stringify(data)); // Shallow compare data
+      return prev.filter(track => !TrackData.compare(track, data));
     });
   }
 

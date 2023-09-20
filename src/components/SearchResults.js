@@ -3,11 +3,11 @@ import ResultCard from './ResultCard';
 
 function SearchResults(props) {
     function formatDataAsResult(data) {
-        // Data is expected to be an Array of Objects
+        // Data is expected to be an Array of TrackData
         let resultCards = [];
         data.forEach((result, index) => {
             // 'cover' is a placeholder for the image used for the track.
-            resultCards.push(<ResultCard key={`result_${index}`} cover={result.cover} title={result.title} description={result.description} onAdd={props.onAdd}/>)
+            resultCards.push(<ResultCard key={`result_${index}`} trackData={result} onAdd={props.onAdd}/>)
         });
         return resultCards;
     }

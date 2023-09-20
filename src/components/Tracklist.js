@@ -4,11 +4,11 @@ import Track from './Track';
 function TrackList(props) {
 
     function formatDataAsTracks(data) {
-        // Data is assumed to be an array of objects
+        // Data is expected to be an array of TrackData
         let tracks = [];
 
         data.forEach((track, index) => {
-            tracks.push(<Track key={`track_${index}`} cover={track.cover} title={track.title} description={track.description} onRemove={props.onRemove} />)
+            tracks.push(<Track key={`track_${index}`} trackData={track} onRemove={props.onRemove} />)
         });
 
         return tracks;

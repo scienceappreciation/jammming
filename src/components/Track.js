@@ -4,13 +4,14 @@ function Track(props) {
 
 
     function onClick() {
-        props.onRemove({ cover: props.cover, title: props.title, description: props.description });
+        props.onRemove(props.trackData);
     }
 
     return (<li>
-        <img src={props.cover} alt={`${props.title} cover`} role="presentation" />
-        <h2>{props.title}</h2>
-        <p>{props.description}</p>
+        <img src={props.trackData.cover} alt={`${props.trackData.album} cover`} role="presentation" />
+        <h2>{props.trackData.title}</h2>
+        <span>{props.trackData.author}</span>
+        <span>{props.trackData.album}</span>
         <button className="rm-btn" onClick={onClick}>x Remove</button>
     </li>);
 }
