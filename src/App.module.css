@@ -1,0 +1,23 @@
+.page-title {
+    color: #94e985;
+    font-weight: bold;
+    font-size: 2.8rem;
+    text-align: center;
+    text-shadow: 4px 4px #88d97a;
+}
+
+.page-subtitle {
+    color: #94e985;
+    font-size: 2.1rem;
+    text-align: center;
+    text-shadow: 1px 1px #88d97a;
+}
+
+.container {
+    background-color: #130c15;
+    border-radius: 24px;
+    padding: 2rem;
+    width: 50%;
+    margin: 1rem auto;
+    color: white;
+}

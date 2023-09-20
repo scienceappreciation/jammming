@@ -3,11 +3,14 @@ import SearchBar from './components/SearchBar';
 import SearchResults from './components/SearchResults';
 import Playlist from './components/Playlist';
 import TrackData from './classes/TrackData';
+import mainStyle from './App.module.css';
 
-/* TODO: Cleanup and Standardize Object Format for Track Data via a Class
-/* TODO: Implement Shallow Comparing Track Data via Class */
-/* TODO: Work author and album into the track information */
-/* TODO: Conduct Proper Mock Tests & Implement Search Function */
+/* TODO: App CSS */
+/* TODO: Search CSS */
+/* TODO: Results CSS */
+/* TODO: Playlist CSS */
+/* TODO: Tracks CSS */
+/* TODO: Spotify Button CSS */
 
 const mock_cover = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT39IVFHztC3vYZTT9k04c3x99_fytdXkQJH_ODRHb7eWe7S4f3";
 
@@ -50,8 +53,8 @@ function App() {
 
   return (
     <div>
-      <h1>Jammming</h1>
-      <span>An App for all of your playlist needs.</span>
+      <h1 className={mainStyle["page-title"]}>Jammming</h1>
+      <h2 className={mainStyle["page-subtitle"]}>An App for all of your playlist needs.</h2>
       <SearchBar onSearch={handleSearch}/>
       <SearchResults results={searchResults} onAdd={handleAdd}/>
       <Playlist onTitleChange={handleTitleChange} title={playListTitle} trackList={trackList} onRemove={handleRemove}/>

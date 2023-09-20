@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './css/ResultCard.module.css';
 
 function ResultCard(props) {
 
@@ -7,13 +8,13 @@ function ResultCard(props) {
     }
 
     return (
-        <li>
+        <li className={styles.card}>
             <img src={props.trackData.cover} alt={`${props.trackData.album} cover`} role="presentation" />
-            <h2>{props.trackData.title}</h2>
-            <span>{props.trackData.author}</span>
-            <span>{props.trackData.album}</span>
-            <p>{props.trackData.description}</p>
-            <button className='add-btn' onClick={onClick}>+  Add to Playlist</button>
+            <div>
+                <h4>{props.trackData.title}</h4>
+                <span>{`${props.trackData.author} - ${props.trackData.album}`}</span>
+            </div>
+            <button className='add-btn' onClick={onClick}>+  Add</button>
         </li>
     );
 }

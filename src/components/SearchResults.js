@@ -1,5 +1,6 @@
 import React from "react";
 import ResultCard from './ResultCard';
+import mainStyles from '../App.module.css';
 
 function SearchResults(props) {
     function formatDataAsResult(data) {
@@ -13,7 +14,7 @@ function SearchResults(props) {
     }
 
     return (
-    <div>
+    <div className={mainStyles.container}>
         <ul>
             {props.results !== null ? formatDataAsResult(props.results) : <p>No results to show yet.</p>}
         </ul>    

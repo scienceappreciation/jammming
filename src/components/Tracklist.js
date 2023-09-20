@@ -1,5 +1,6 @@
 import React from "react";
 import Track from './Track';
+import styles from './css/TrackList.module.css';
 
 function TrackList(props) {
 
@@ -15,7 +16,7 @@ function TrackList(props) {
     }
 
     return(
-    <div>
+    <div className={styles.container}>
         <h3>Tracks</h3>
         { props.data.length > 0 ? <ol>{formatDataAsTracks(props.data)}</ol> : <span>Nothing here yet.</span>}
     </div>
