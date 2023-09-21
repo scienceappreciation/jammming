@@ -1,8 +1,7 @@
 class TrackData {
-    constructor(uri, title, description, author, album, cover="") {
+    constructor(uri, title, author, album, cover="") {
         this._uri = uri;
         this._title = title;
-        this._description = description;
         this._author = author;
         this._album = album;
         this._cover = cover;
@@ -19,8 +18,7 @@ class TrackData {
     get author() { return this._author }
     get album() { return this._album }
     get cover() {
-        if (this._cover.length > 0) return this._cover;
-        else return false;
+        return this._cover;
     }
 }
 
