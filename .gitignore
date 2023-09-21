@@ -11,6 +11,9 @@
 # production
 /build
 
+# secure information
+src/modules/Authorization/config.json
+
 # misc
 .DS_Store
 .env.local
