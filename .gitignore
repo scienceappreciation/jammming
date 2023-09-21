@@ -8,6 +8,9 @@
 # testing
 /coverage
 
+# secure files
+secret.json
+
 # production
 /build
 
