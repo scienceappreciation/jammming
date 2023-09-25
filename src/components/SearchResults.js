@@ -16,7 +16,7 @@ function SearchResults(props) {
     return (
     <div className={mainStyles.container}>
         <ul>
-            {props.results !== null ? formatDataAsResult(props.results) : <p>No results to show yet.</p>}
+            {props.results ? formatDataAsResult(props.results) : <p>No results to show yet.</p>}
         </ul>    
     </div>);
 }

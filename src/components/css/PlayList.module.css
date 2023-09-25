@@ -15,15 +15,15 @@
     color: white;
     text-shadow: 1px 1px rgb(41, 41, 41);
     border-radius: 5px;
-    transition: 'opacity' 5s;
+    transition: background-color 0.5s;
 }
 
 .spotify:hover {
-    opacity: 0.75;
+    background-color: #121c11;
 }
 
 .spotify:active {
-    opacity: 0.5;
+    background-color: #5f935a;
 }
 
 .spotify-image {
