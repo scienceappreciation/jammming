@@ -50,6 +50,18 @@
     transition: 'opacity' 5s;
 }
 
+.disabled {
+    opacity: 0.5;
+}
+
+.disabled:hover {
+    opacity: 0.5;
+}
+
+.disabled:active {
+    opacity: 0.5;
+}
+
 
 .card button:hover {
     opacity: 0.5;
