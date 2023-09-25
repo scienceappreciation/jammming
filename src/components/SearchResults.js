@@ -8,7 +8,10 @@ function SearchResults(props) {
         let resultCards = [];
         data.forEach((result, index) => {
             // 'cover' is a placeholder for the image used for the track.
-            resultCards.push(<ResultCard key={`result_${index}`} trackData={result} onAdd={props.onAdd}/>)
+
+            const is_added = props.added.includes(result.uri);
+
+            resultCards.push(<ResultCard key={`result_${index}`} trackData={result} onAdd={props.onAdd} added={is_added}/>)
         });
         return resultCards;
     }

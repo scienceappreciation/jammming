@@ -25,6 +25,8 @@ function App() {
   const [ accessToken, setAccessToken ] = useState('');
   const [ searchQuery, setSearchQuery ] = useState('');
 
+  const [ addedResults, setAddedResults ] = useState([]);
+
   const [ alertShown, setAlertShown ] = useState(false);
   const [ alertData, setAlertData ] = useState({ status: '', message: '', isError: false });
 
@@ -176,6 +178,8 @@ function App() {
     // Expects Data to be TrackData
     setTrackList((prev) => {
       if (prev.some((track => TrackData.compare(track, data)))) return prev; // No duplicate tracks allowed
+
+      setAddedResults((prev) => [...prev, data.uri]);
       return [data, ...prev];
     });
   }
@@ -183,6 +187,7 @@ function App() {
   function handleRemove(data) {
     // Expects Data to be TrackData
     setTrackList((prev) => {
+      setAddedResults((prev) => prev.filter(u => u !== data.uri));
       return prev.filter(track => !TrackData.compare(track, data));
     });
   }
@@ -214,7 +219,7 @@ function App() {
       <h1 className={mainStyle["page-title"]}>Jammming</h1>
       <h2 className={mainStyle["page-subtitle"]}>An App for all of your playlist needs.</h2>
       <SearchBar onSearch={handleSearch} query={searchQuery} onQuery={handleQueryChange}/>
-      <SearchResults results={searchResults} onAdd={handleAdd}/>
+      <SearchResults results={searchResults} onAdd={handleAdd} added={addedResults}/>
       <Playlist onTitleChange={handleTitleChange} title={playListTitle} trackList={trackList} onRemove={handleRemove} onSpotifySubmit={handleSpotifySubmit}/>
       {alertShown && <Alert reset={resetSession} onClose={handleAlertClose} isError={alertData.isError} status={alertData.status} message={alertData.message} />}
     </div>

@@ -14,7 +14,8 @@ function ResultCard(props) {
                 <h4>{props.trackData.title}</h4>
                 <span>{`${props.trackData.author} - ${props.trackData.album}`}</span>
             </div>
-            <button className='add-btn' onClick={onClick}>+  Add</button>
+            {!props.added && <button className='add-btn' onClick={onClick}>+  Add</button>}
+            {props.added && <button className={styles.disabled} disabled>Added</button>}
         </li>
     );
 }
