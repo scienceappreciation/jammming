@@ -1,18 +1,22 @@
+/* React Components & Styles */
 import React, { useState, useEffect } from 'react';
+
 import SearchBar from './components/SearchBar';
 import SearchResults from './components/SearchResults';
 import Playlist from './components/Playlist';
-import TrackData from './classes/TrackData';
+import SpotifyLoginButton from './components/SpotifyLoginButton';
+
 import mainStyle from './App.module.css';
+
+/* Extra Modules */
+import TrackData from './classes/TrackData';
 import './modules/Authorization/Authorization';
 import { buildRequestUrl, formatParamsAsObject } from './modules/Authorization/Authorization';
 
-import SpotifyLoginButton from './components/SpotifyLoginButton';
-
-/* TODO: Beautify Code */
 /* TODO: Reduce Repetition */
 /* TODO: Add real error handling for when we recieve an error object just in case */
 /* TODO: Add a pretty alert element that indicates success or failure */
+/* TODO: Fix the CSS */
 
 function App() {
 
@@ -52,9 +56,7 @@ function App() {
     setTimeout(() => {resetSession()}, expires_in_ms);
   }
 
-  useEffect(() => {
-    validateAccess();
-  }, []);
+  useEffect(() => { validateAccess(); }, []);
 
   async function handleSearch(e) {
     e.preventDefault();
@@ -75,10 +77,7 @@ function App() {
 
     await fetch(requestUrl, { 
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${accessToken}`
-      }  
+      headers: COMMON_HEADERS
     }).then(async response => {
       const jsonResponse = await response.json();
       let results = [];
@@ -106,20 +105,69 @@ function App() {
       setSearchResults(results);
 
     }).catch(e => {
+        console.log(e);
         setSearchResults(() => null);
     });
-
   }
 
-  function handleQueryChange(e) {
-    const newQuery = e.target.value;
-    setSearchQuery(() => newQuery);
+  async function handleSpotifySubmit() {
+    if (trackList.length === 0) return alert("You don't have any saved tracks!");
+    if (playListTitle.length === 0) return alert("You need to set a title!");
+
+    let uris = [];
+    for (const track of trackList) {
+      uris.push(track.uri);
+    }
+
+    const userIdEndpoint = "https://api.spotify.com/v1/me";
+    let user = null;
+
+    await fetch(userIdEndpoint, {
+        method: "GET",
+        headers: COMMON_HEADERS
+      }).then(async response => {
+        user = await response.json();
+      }).catch(e => {
+        return alert(`User ID Request failed. Error: ${e}`);
+      });
+
+    const playlistCreateEndpoint = `https://api.spotify.com/v1/users/${user.id}/playlists`;
+    const PLAYLIST_BODY = {
+        name: playListTitle,
+        description: "A custom playlist created through Jammming!",
+        public: false
+      };
+
+      let playlist = null;
+      await fetch(playlistCreateEndpoint, { method: "POST", headers: COMMON_HEADERS, body: JSON.stringify(PLAYLIST_BODY)
+      }).then(async response => {
+        playlist = await response.json();
+      }).catch(e => {
+        alert(`Error creating the Playlist: ${e}`);
+        return;
+      });
+    
+    const trackAddEndpoint = `https://api.spotify.com/v1/playlists/${playlist.id}/tracks`;
+    const TRACK_BODY = {
+        "uris": uris,
+        "position": 0
+    }
+
+    await fetch(trackAddEndpoint, { method: "POST", headers: COMMON_HEADERS, body: JSON.stringify(TRACK_BODY) 
+      }).then(async response => {
+        const snapshot = await response.json();
+
+        if (snapshot) return alert(`Playlist created successfully! ${snapshot.snapshot_id}`);
+
+        alert("There was an error creating your playlist. Please try again.");
+      }).catch(e => {
+        return alert(`Error adding tracks: ${e}`);
+      });
   }
 
-  function handleTitleChange(e) {
-    const title = e.target.value;
-    setPlayListTitle(() => title);
-  }
+  function handleQueryChange(e) { setSearchQuery(() => e.target.value); }
+
+  function handleTitleChange(e) { setPlayListTitle(() => e.target.value); }
 
   function handleAdd(data) {
     // Expects Data to be TrackData
@@ -142,91 +190,6 @@ function App() {
       <h2 className={mainStyle["page-subtitle"]}>An App for all of your playlist needs.</h2>
       <SpotifyLoginButton url={buildRequestUrl()} />
     </div>);
-  }
-
-  async function handleSpotifySubmit(e) {
-    // Verify that the Tracklist has content
-    if (trackList.length === 0) {
-      alert("You don't have any saved tracks!");
-      return
-    }
-
-    // Verify the Playlist Title is not empty
-    if (playListTitle.length === 0) {
-      alert("You need to set a title!");
-      return
-    }
-
-    // Get the URIs in the Tracklist as an array
-    let uris = [];
-
-    for (const track of trackList) {
-      uris.push(track.uri);
-    }
-
-
-    // Create the Playlist
-      const userIdEndpoint = "https://api.spotify.com/v1/me";
-
-      // Get the User's ID
-      let user = null;
-      await fetch(userIdEndpoint, {
-        method: "GET",
-        headers: {
-          ...COMMON_HEADERS
-        }
-      }).then(async response => {
-        user = await response.json();
-      }).catch(e => {
-        alert(`User ID Request failed. Error: ${e}`);
-        return
-      });
-
-      // Create the endpoint URL & headers
-      const playlistCreateEndpoint = `https://api.spotify.com/v1/users/${user.id}/playlists`;
-
-      const PLAYLIST_BODY = {
-          name: playListTitle,
-          description: "A custom playlist created through Jammming!",
-          public: false
-      };
-
-      let playlist = null;
-
-      await fetch(playlistCreateEndpoint, { method: "POST", headers: COMMON_HEADERS, body: JSON.stringify(PLAYLIST_BODY) })
-      .then(async response => {
-        playlist = await response.json();
-        alert(JSON.stringify(playlist))
-      })
-      .catch(e => {
-        alert(`Error creating the Playlist: ${e}`);
-        return;
-      });
-    
-    // Add tracks to the PlayList
-    const trackAddEndpoint = `https://api.spotify.com/v1/playlists/${playlist.id}/tracks`;
-
-    const TRACK_BODY = {
-        "uris": uris,
-        "position": 0
-    }
-
-    await fetch(trackAddEndpoint, { method: "POST", headers: COMMON_HEADERS, body: JSON.stringify(TRACK_BODY) })
-    .then(async response => {
-      const snapshot = await response.json();
-      alert(JSON.stringify(snapshot));
-
-      if (snapshot) {
-        alert(`Playlist created successfully! ${snapshot.snapshot_id}`);
-      } else {
-        alert("There was an error creating your playlist. Please try again.");
-      }
-
-    })
-    .catch(e => {
-      alert(`Error adding tracks: ${e}`);
-      return
-    })
   }
 
   return (
