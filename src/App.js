@@ -13,8 +13,6 @@ import TrackData from './classes/TrackData';
 import './modules/Authorization/Authorization';
 import { buildRequestUrl, formatParamsAsObject } from './modules/Authorization/Authorization';
 
-/* TODO: Reduce Repetition */
-/* TODO: Add real error handling for when we recieve an error object just in case */
 /* TODO: Add a pretty alert element that indicates success or failure */
 /* TODO: Fix the CSS */
 
@@ -126,9 +124,10 @@ function App() {
         method: "GET",
         headers: COMMON_HEADERS
       }).then(async response => {
+        if (response.error) return handleError(response.error);
         user = await response.json();
       }).catch(e => {
-        return alert(`User ID Request failed. Error: ${e}`);
+        return handleError({ status: "500", message:e.message});
       });
 
     const playlistCreateEndpoint = `https://api.spotify.com/v1/users/${user.id}/playlists`;
@@ -141,10 +140,10 @@ function App() {
       let playlist = null;
       await fetch(playlistCreateEndpoint, { method: "POST", headers: COMMON_HEADERS, body: JSON.stringify(PLAYLIST_BODY)
       }).then(async response => {
+        if (response.error) return handleError(response.error);
         playlist = await response.json();
       }).catch(e => {
-        alert(`Error creating the Playlist: ${e}`);
-        return;
+        return handleError({ status: "500", message:e.message});
       });
     
     const trackAddEndpoint = `https://api.spotify.com/v1/playlists/${playlist.id}/tracks`;
@@ -156,12 +155,13 @@ function App() {
     await fetch(trackAddEndpoint, { method: "POST", headers: COMMON_HEADERS, body: JSON.stringify(TRACK_BODY) 
       }).then(async response => {
         const snapshot = await response.json();
+        if (response.error) return handleError(response.error);
 
-        if (snapshot) return alert(`Playlist created successfully! ${snapshot.snapshot_id}`);
+        if (snapshot.snapshot_id) return handleSuccess("Playlist created successfully! Go check it out!");
 
-        alert("There was an error creating your playlist. Please try again.");
+        handleError({ status: '404', message: "There was an error creating your playlist. Please try again." })
       }).catch(e => {
-        return alert(`Error adding tracks: ${e}`);
+        return handleError({ status: "500", message:e.message});
       });
   }
 
@@ -182,6 +182,14 @@ function App() {
     setTrackList((prev) => {
       return prev.filter(track => !TrackData.compare(track, data));
     });
+  }
+
+  function handleError(error) {
+    /* TODO: Cause the element to show with the error. */
+  }
+
+  function handleSuccess(message) {
+    /* TODO: Cause the element to show with the success message. */
   }
 
   if (!loggedIn) {
