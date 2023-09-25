@@ -20,7 +20,7 @@
     border: 0;
     margin-left: 1rem;
     font-size: large;
-    transition: 'opacity' 5s;
+    transition: opacity 5s;
 }
 
 .button:hover {

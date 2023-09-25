@@ -5,6 +5,7 @@ import SearchBar from './components/SearchBar';
 import SearchResults from './components/SearchResults';
 import Playlist from './components/Playlist';
 import SpotifyLoginButton from './components/SpotifyLoginButton';
+import Alert from './components/Alert';
 
 import mainStyle from './App.module.css';
 
@@ -13,7 +14,6 @@ import TrackData from './classes/TrackData';
 import './modules/Authorization/Authorization';
 import { buildRequestUrl, formatParamsAsObject } from './modules/Authorization/Authorization';
 
-/* TODO: Add a pretty alert element that indicates success or failure */
 /* TODO: Fix the CSS */
 
 function App() {
@@ -25,18 +25,21 @@ function App() {
   const [ accessToken, setAccessToken ] = useState('');
   const [ searchQuery, setSearchQuery ] = useState('');
 
+  const [ alertShown, setAlertShown ] = useState(false);
+  const [ alertData, setAlertData ] = useState({ status: '', message: '', isError: false });
+
   const COMMON_HEADERS = {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${accessToken}`
   };
 
+  const refreshUrl = () => window.location.href = window.location.origin;
+  const logout = () => setLoggedIn(() => false);
+  const clearToken = () => setAccessToken(() => '');
+  const resetSession = () => { refreshUrl(); logout(); clearToken(); }
+
   function validateAccess() {
     const urlParams = formatParamsAsObject(window.location.origin, window.location.href);
-
-    const refreshUrl = () => window.location.href = window.location.origin;
-    const logout = () => setLoggedIn(() => false);
-    const clearToken = () => setAccessToken(() => '');
-    const resetSession = () => { refreshUrl(); logout(); clearToken(); }
 
     if (urlParams["error"] && urlParams["error"] === "access_denied") {
       resetSession();
@@ -109,8 +112,8 @@ function App() {
   }
 
   async function handleSpotifySubmit() {
-    if (trackList.length === 0) return alert("You don't have any saved tracks!");
-    if (playListTitle.length === 0) return alert("You need to set a title!");
+    if (trackList.length === 0) return handleError({status:"400", message: "You don't have any saved tracks!"});
+    if (playListTitle.length === 0) return handleError({status: "400", message: "You need to set a title!"});
 
     let uris = [];
     for (const track of trackList) {
@@ -185,11 +188,17 @@ function App() {
   }
 
   function handleError(error) {
-    /* TODO: Cause the element to show with the error. */
+    setAlertData({ status: error.status, message: error.message, isError: true })
+    setAlertShown(() => true)
   }
 
   function handleSuccess(message) {
-    /* TODO: Cause the element to show with the success message. */
+    setAlertData({ status: "200", message: message, isError: false })
+    setAlertShown(() => true)
+  }
+
+  function handleAlertClose() {
+    setAlertShown(() => false)
   }
 
   if (!loggedIn) {
@@ -207,6 +216,7 @@ function App() {
       <SearchBar onSearch={handleSearch} query={searchQuery} onQuery={handleQueryChange}/>
       <SearchResults results={searchResults} onAdd={handleAdd}/>
       <Playlist onTitleChange={handleTitleChange} title={playListTitle} trackList={trackList} onRemove={handleRemove} onSpotifySubmit={handleSpotifySubmit}/>
+      {alertShown && <Alert reset={resetSession} onClose={handleAlertClose} isError={alertData.isError} status={alertData.status} message={alertData.message} />}
     </div>
   );
 }
