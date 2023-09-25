@@ -32,17 +32,17 @@
     border: 0;
     margin-left: 1rem;
     font-size: large;
-    transition: opacity 5s;
+    transition: background-color 0.5s;
 }
 
 .confirm-button:hover {
     border: 0;
-    opacity: 0.75;
+    background-color: #629159;
 }
 
 .confirm-button:active {
     border: 0;
-    opacity: 0.5;
+    background-color: #b4c7b1;
 }
 
 .error {
