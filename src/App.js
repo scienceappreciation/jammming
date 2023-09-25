@@ -9,6 +9,11 @@ import { buildRequestUrl, formatParamsAsObject } from './modules/Authorization/A
 
 import SpotifyLoginButton from './components/SpotifyLoginButton';
 
+/* TODO: Beautify Code */
+/* TODO: Reduce Repetition */
+/* TODO: Add real error handling for when we recieve an error object just in case */
+/* TODO: Add a pretty alert element that indicates success or failure */
+
 function App() {
 
   const [ searchResults, setSearchResults ] = useState(null);
@@ -17,6 +22,11 @@ function App() {
   const [ loggedIn, setLoggedIn ] = useState(false);
   const [ accessToken, setAccessToken ] = useState('');
   const [ searchQuery, setSearchQuery ] = useState('');
+
+  const COMMON_HEADERS = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${accessToken}`
+  };
 
   function validateAccess() {
     const urlParams = formatParamsAsObject(window.location.origin, window.location.href);
@@ -134,13 +144,98 @@ function App() {
     </div>);
   }
 
+  async function handleSpotifySubmit(e) {
+    // Verify that the Tracklist has content
+    if (trackList.length === 0) {
+      alert("You don't have any saved tracks!");
+      return
+    }
+
+    // Verify the Playlist Title is not empty
+    if (playListTitle.length === 0) {
+      alert("You need to set a title!");
+      return
+    }
+
+    // Get the URIs in the Tracklist as an array
+    let uris = [];
+
+    for (const track of trackList) {
+      uris.push(track.uri);
+    }
+
+
+    // Create the Playlist
+      const userIdEndpoint = "https://api.spotify.com/v1/me";
+
+      // Get the User's ID
+      let user = null;
+      await fetch(userIdEndpoint, {
+        method: "GET",
+        headers: {
+          ...COMMON_HEADERS
+        }
+      }).then(async response => {
+        user = await response.json();
+      }).catch(e => {
+        alert(`User ID Request failed. Error: ${e}`);
+        return
+      });
+
+      // Create the endpoint URL & headers
+      const playlistCreateEndpoint = `https://api.spotify.com/v1/users/${user.id}/playlists`;
+
+      const PLAYLIST_BODY = {
+          name: playListTitle,
+          description: "A custom playlist created through Jammming!",
+          public: false
+      };
+
+      let playlist = null;
+
+      await fetch(playlistCreateEndpoint, { method: "POST", headers: COMMON_HEADERS, body: JSON.stringify(PLAYLIST_BODY) })
+      .then(async response => {
+        playlist = await response.json();
+        alert(JSON.stringify(playlist))
+      })
+      .catch(e => {
+        alert(`Error creating the Playlist: ${e}`);
+        return;
+      });
+    
+    // Add tracks to the PlayList
+    const trackAddEndpoint = `https://api.spotify.com/v1/playlists/${playlist.id}/tracks`;
+
+    const TRACK_BODY = {
+        "uris": uris,
+        "position": 0
+    }
+
+    await fetch(trackAddEndpoint, { method: "POST", headers: COMMON_HEADERS, body: JSON.stringify(TRACK_BODY) })
+    .then(async response => {
+      const snapshot = await response.json();
+      alert(JSON.stringify(snapshot));
+
+      if (snapshot) {
+        alert(`Playlist created successfully! ${snapshot.snapshot_id}`);
+      } else {
+        alert("There was an error creating your playlist. Please try again.");
+      }
+
+    })
+    .catch(e => {
+      alert(`Error adding tracks: ${e}`);
+      return
+    })
+  }
+
   return (
     <div>
       <h1 className={mainStyle["page-title"]}>Jammming</h1>
       <h2 className={mainStyle["page-subtitle"]}>An App for all of your playlist needs.</h2>
       <SearchBar onSearch={handleSearch} query={searchQuery} onQuery={handleQueryChange}/>
       <SearchResults results={searchResults} onAdd={handleAdd}/>
-      <Playlist onTitleChange={handleTitleChange} title={playListTitle} trackList={trackList} onRemove={handleRemove}/>
+      <Playlist onTitleChange={handleTitleChange} title={playListTitle} trackList={trackList} onRemove={handleRemove} onSpotifySubmit={handleSpotifySubmit}/>
     </div>
   );
 }

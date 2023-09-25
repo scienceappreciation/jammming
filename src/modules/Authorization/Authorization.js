@@ -7,7 +7,7 @@ if (!secret["CLIENT_ID"]) {
 const client_id = secret["CLIENT_ID"];
 const redirect_uri = "http://localhost:3000/";
 
-const scope = "user-read-private user-read-email";
+const scope = "user-read-private user-read-email playlist-modify-private playlist-modify-public";
 const url = "https://accounts.spotify.com/authorize";
 const state = crypto.randomUUID();
 
