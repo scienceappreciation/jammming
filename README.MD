@@ -25,7 +25,7 @@
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
-<h3 align="center">My Portfolio</h3>
+<h3 align="center">Jammming/h3>
 
   <p align="center">
     A web app that allows you to search Spotify and build a custom playlist with all of your favorite podcasts and music. Built for Codecademy as a portfolio project.
